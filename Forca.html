@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+Array.prototype.random = function() {
+
+    return this[Math.floor((Math.random()*this.length))];
+}
+ 
+Array.prototype.chrArrayToString = function(letr) {
+    var a = new String();
+var test = this.length;
+    for (var i = 0; i < test; i++) {        
+        a += this[i] 
+if (i+1<test) a += letr;
+    }
+    return a;    
+}
+ 
+Array.prototype.search = function(s,q){
+var test = this.length;
+if (q) {
+s=s.toString();
+for(var i=0; i<test; i++){
+if(this[i].constructor == Array) if(this[i].search(s,q)) return true;
+if(this[i].toString().indexOf(s) != -1) return true;
+}
+}
+else {
+for(var i=0; i<test; i++){
+if(this[i].constructor == Array) if(this[i].search(s,q)) return true;
+if(this[i]===s) return true;
+}
+}
+return false;
+}
+ 
+String.prototype.replaceAt=function() {
+  var rtest=(arguments[2]==null?1:arguments[2]);
+  return this.substring(0,arguments[0])+arguments[1]+this.substring(arguments[0]+rtest);
+}
+ 
+String.prototype.formatCurrency = function(c) {
+    var t = this; if(c == undefined) c = 2;
+    var p, d = (t=t.split("."))[1].substr(0, c);
+    for(p = (t=t[0]).length; (p-=3) > 1;) {
+        t = t.substr(0,p) + "." + t.substr(p);
+    }
+    return t+","+d+Array(c+1-d.length).join(0);
+}
+ 
+String.prototype.tiraacento = function (word){
+var palavra = this.toLowerCase();
+palavra = palavra.replace(/[áàâãª]/g,'a');
+palavra = palavra.replace(/[ÁÀÂÃ]/g,"A");
+palavra = palavra.replace(/[éèê]/g,"e");
+palavra = palavra.replace(/[ÉÈÊ]/g,"E");
+palavra = palavra.replace(/[íìî]/g,"i");
+palavra = palavra.replace(/[óòôõº]/g,"o");
+palavra = palavra.replace(/[ÓÒÔÕ]/g,"O");
+palavra = palavra.replace(/[úùû]/g,"u");
+palavra = palavra.replace(/[ÚÙÛ]/g,"U");
+return palavra;
+}
+ 
+
+function forca() {}
+ 
+function executa(e){
+    
+    if(typeof(e)=='undefined')var e=window.event;
+    source=e.target?e.target:e.srcElement;
+   
+    if(source.nodeType==3)source=source.parentNode ;
+ 
+
+var letra=source.value.tiraacento();
+ 
+
+var validentry=/[A-Za-zÀ-ú]/
+source.value="";
+if(!validentry.test(letra)) return false
+ 
+
+if(!this.letrastentadas.search(letra)) {
+this.letrastentadas.push(letra);
+this.tries.innerHTML = "Letras tentadas: " + this.letrastentadas.chrArrayToString(',');
+}
+if (this.palavraminuscula.indexOf(letra) != -1){ 
+
+this.mostraletras(letra);
+}else{ 
+this.divmessages.innerHTML = 'A palavra não contém a letra ' + letra;
+this.verificaerros(letra);
+}
+}
+ 
+function verificaerros(letra){
+
+if (this.errors ==0 || !this.erradasletras.search(letra)){
+this.erradasletras.push(letra);
+this.erros++;
+}
+ 
+this.diverros.innerHTML = this.erros + ' erro(s)';
+ 
+
+if (this.erros>7){
+
+var denovo = confirm("voce errou ,Quer jogar de novo?");
+if (denovo==true) this.init();
+}
+}
+ 
+function mostraletras(caractere){
+
+for (var x=this.t-1; x>=0;x--){
+if (this.palavraminuscula.charAt(x) == caractere) this.board[x]=1;
+}
+this.mostrapalavra();
+}
+ 
+function mostrapalavra(){
+for (var x=0; x<this.t;x++){
+if (this.board[x] & 1){
+var ch = this.selecionadaarray[x];
+this.wordoculta=this.wordoculta.replaceAt(x, ch);
+this.board[x] = 2;
+}
+}
+this.telaoculta.innerHTML = this.wordoculta;
+ 
+if (this.wordoculta==this.palavraselecionada){
+
+var denovo = confirm("voce acertou ,Quer jogar de novo?");
+if (denovo==true) this.init()
+}
+}
+ 
+function iniciar(){
+this.erros=0;
+this.wordoculta=new String;
+this.erradasletras=new Array;
+this.letrastentadas=new Array;
+this.board=new Array;
+this.selecionadaarray=new Array;
+ 
+var palavras = new Array('Casa', 'Aline', 'Cecília', 'Rodrigo', 'Paris', 'Coração', 'cogumelo', 'Jônatas', 
+'carro', 'lucas', 'cidadao','Franca','Melão','php','manga','mosquito', 'Mel', 'Cha','massagem');
+ 
+this.size = document.getElementById('tamanho');
+this.divmessages = document.getElementById('messages');
+this.diverros=document.getElementById('erros');
+this.telaoculta=document.getElementById('palavraoculta');
+this.tries=document.getElementById('tentativas');
+ 
+this.palavraselecionada = palavras.random();
+this.palavraminuscula = this.palavraselecionada.tiraacento();
+this.t=this.palavraselecionada.length;
+ 
+this.wordoculta=this.palavraminuscula.replace(/[A-Za-zÀ-ú]/g,'_');
+for (var z=0;z<this.t;z++){
+  this.board[z]=0;
+  this.selecionadaarray[z] = this.palavraselecionada.charAt(z);
+}
+this.telaoculta.innerHTML = this.wordoculta;
+this.divmessages.innerHTML = 'Novo jogo iniciado';
+this.diverros.innerHTML = 'Nenhum erro até o momento';
+this.size.innerHTML = ' A palavra tem ' + this.t + ' letras';
+this.tries.innerHTML = "Letras tentadas:";
+}
+ 
+forca.prototype.executa=executa
+forca.prototype.verificaerros=verificaerros
+forca.prototype.mostraletras=mostraletras
+forca.prototype.mostrapalavra=mostrapalavra
+forca.prototype.init=iniciar
+ 
+function executaforca(e){
+fo.executa(e);
+}
+ 
+function reinicio(){
+document.getElementById('entrada').focus();
+fo.init();
+}
+ 
+window.onload = init
+ 
+function init(){
+document.getElementById('entrada').focus();
+fo = new forca();
+fo.init();
+var inputentry=document.getElementById('entrada');
+inputentry.onkeyup=executaforca;
+var novo=document.getElementById('new');
+novo.onclick=reinicio
+}
+</script>
+ 
+<style>
+ .box{ text-align: center;
+      width:270px;
+      height: 300px;
+      background: white;
+      padding: 10px;
+      -moz-box-shadow:    inset 0 0 10px rgba(0,0,0, 0.6);
+     -webkit-box-shadow: inset 0 0 10px rgba(0,0,0, 0.6);
+     box-shadow:         inset 0 0 10px rgba(0,0,0, 0.6);
+    }
+
+
+input.hid{ display:none; }
+body{ background-color:#FFF7D2; font-family:verdana,arial; color:black; font-weight:bold;}
+#palavraoculta{ letter-spacing:20px; }
+input.entry{ border:5px solid black; background-color: white; }
+</style>
+ 
+<head>
+<title>Forca</title>
+</head>
+<center>
+<body>
+<img src="https://www.dfilitto.com.br/wp-content/uploads/2016/11/forca.jpg" width="15%">
+<div class="box">
+	<div><i><p>A Regra do jogo é:</p>
+		<p>Acerte a palavra com ate 7 erros</p><i></div>
+
+<div id="tamanho"></div>
+<div id="erros"></div>
+<div id="palavraoculta"></div>
+<br />
+<form>
+<input id="hid" class="hid"></input>
+<input  id="entrada" type="text" class="entry" size="1" maxlength="1"></input>
+<div id="messages"></div>
+<div id="tentativas"></div><br />
+<input   type="submit"   value="Trocar de Palavra" id="new"></input>
+</div>
+</form>
+
+
+ 
+</body>
+</center>
+</html>
